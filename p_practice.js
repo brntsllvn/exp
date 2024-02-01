@@ -1,10 +1,5 @@
-function createSVG(containerId, width, height) {
-    const svg = d3.create("svg")
-        .attr("width", width)
-        .attr("height", height);
-    d3.select(`#${containerId}`).append(() => svg.node());
-    return svg;
-}
+import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+import { createSVG } from "./utils.js";
 
 function drawAxes(svg, width, height) {
     const marginTop = 30, marginRight = 30, marginBottom = 50, marginLeft = 40;
