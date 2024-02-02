@@ -1,63 +1,46 @@
+import { typeWriter, wait, fadeOut, fadeIn, moveTo, move } from "./animations.js"
+
 export default async function drawIntro(svg, width, height, subtitleText) {
+    // Assuming the canvas is square, use either width or height
+    const canvasSize = Math.min(width, height);
+    const canvasCenterX = width / 2;
+    const canvasCenterY = height / 2;
+
+    // Define the size of the logo relative to the canvas size
+    const logoSize = canvasSize * 0.75;
+    const logoCenterX = (width - logoSize) / 2;
+    const logoCenterY = (height - logoSize) / 2;
+
     const logo = svg.append("image")
         .attr("href", "./logos/square-dark.png")
-        .attr("width", 400)
-        .attr("height", 400)
-        .attr("x", 100)
-        .attr("y", 100);
+        .attr("width", logoSize)
+        .attr("height", logoSize)
+        .attr("x", logoCenterX)
+        .attr("y", logoCenterY);
 
-    await transition(logo, 1000, { x: 100, y: 50 });
+    const logoOutline = svg.append("rect")
+        .attr("width", logoSize)
+        .attr("height", logoSize)
+        .attr("stroke", "pink")
+        .attr("stroke-width", 4)
+        .attr("fill", "none")
+        .attr("x", logoCenterY)
+        .attr("y", logoCenterY);
+
+    const logoGroup = [logo, logoOutline]
+
+    await moveTo(logoGroup, 500, width / 2, height / 2 - height * 0.20)
 
     const subtitle = svg.append("text")
-        .attr("x", width / 2)
-        .attr("y", height / 2 + 100)
         .attr("text-anchor", "middle")
         .style("font-size", "28px")
-        .style("opacity", 1);
+        .style("opacity", 1)
+        .attr("x", canvasCenterX)
+        .attr("y", canvasCenterY + height * 0.10);
 
-    await typeWriter(subtitle, subtitleText, 100);
-    await fadeOut([subtitle, logo], 2000, 1500);
-}
+    logoGroup.push(subtitle);
 
-function transition(element, duration, attributes) {
-    return new Promise(resolve => {
-        const transition = element.transition().duration(duration);
-        for (const attr in attributes) {
-            transition.attr(attr, attributes[attr]);
-        }
-        transition.on("end", resolve);
-    });
-}
-
-function typeWriter(element, text, speed) {
-    return new Promise(resolve => {
-        let i = 0;
-        function typeNext() {
-            if (i < text.length) {
-                element.text(text.substring(0, i + 1));
-                i++;
-                setTimeout(typeNext, speed);
-            } else {
-                resolve();
-            }
-        }
-        typeNext();
-    });
-}
-
-function fadeOut(elements, duration, delay = 0) {
-    const promises = elements.map(element => {
-        return new Promise(resolve => {
-            element.transition()
-                .delay(delay)
-                .duration(duration)
-                .style("opacity", 0)
-                .on("end", () => {
-                    element.remove();
-                    resolve();
-                });
-        });
-    });
-
-    return Promise.all(promises);
+    await typeWriter(subtitle, subtitleText, 60);
+    await wait(500)
+    await fadeOut(logoGroup, 1500);
 }
