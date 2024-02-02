@@ -18,29 +18,30 @@ export default async function drawIntro(svg, width, height, subtitleText) {
         .attr("x", logoCenterX)
         .attr("y", logoCenterY);
 
+    let strokeWidth = window.debug ? 4 : 0
     const logoOutline = svg.append("rect")
         .attr("width", logoSize)
         .attr("height", logoSize)
         .attr("stroke", "pink")
-        .attr("stroke-width", 4)
+        .attr("stroke-width", strokeWidth)
         .attr("fill", "none")
         .attr("x", logoCenterY)
         .attr("y", logoCenterY);
 
     const logoGroup = [logo, logoOutline]
 
-    await moveTo(logoGroup, 500, width / 2, height / 2 - height * 0.20)
+    await moveTo(logoGroup, 500, width / 2, height / 2 - height * 0.10)
 
     const subtitle = svg.append("text")
         .attr("text-anchor", "middle")
         .style("font-size", "28px")
         .style("opacity", 1)
         .attr("x", canvasCenterX)
-        .attr("y", canvasCenterY + height * 0.10);
+        .attr("y", canvasCenterY + height * 0.20);
 
     logoGroup.push(subtitle);
 
     await typeWriter(subtitle, subtitleText, 60);
-    await wait(500)
-    await fadeOut(logoGroup, 1500);
+    await wait(1250)
+    await fadeOut(logoGroup, 1000);
 }
